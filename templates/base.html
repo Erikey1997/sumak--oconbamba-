@@ -1,1 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌿 SUMAK' OCONBAMBA</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Segoe UI',sans-serif;
+               background:#f5f5f5; color:#333; }
 
+        /* ── Sidebar ── */
+        .sidebar {
+            position:fixed; left:0; top:0;
+            width:220px; height:100vh;
+            background:#1B4332; padding:0;
+            overflow-y:auto; z-index:100;
+        }
+        .sidebar .logo {
+            text-align:center; padding:25px 10px;
+            border-bottom:1px solid #2D6A4F;
+        }
+        .sidebar .logo .icono { font-size:40px; }
+        .sidebar .logo h2 {
+            color:#fff; font-size:16px; margin-top:5px;
+        }
+        .sidebar .logo p { color:#B7E4C7; font-size:11px; }
+        .sidebar a {
+            display:block; padding:13px 20px;
+            color:#fff; text-decoration:none;
+            font-size:14px; transition:0.2s;
+            border-left:3px solid transparent;
+        }
+        .sidebar a:hover, .sidebar a.activo {
+            background:#2D6A4F;
+            border-left-color:#52B788;
+        }
+        .sidebar .user-info {
+            position:absolute; bottom:0; left:0; right:0;
+            padding:15px; background:#163a2a;
+            border-top:1px solid #2D6A4F;
+        }
+        .sidebar .user-info p {
+            color:#B7E4C7; font-size:12px; margin-bottom:8px;
+        }
+        .sidebar .user-info a {
+            background:#E63946; text-align:center;
+            border-radius:5px; margin:0; padding:8px;
+        }
+
+        /* ── Contenido ── */
+        .contenido {
+            margin-left:220px; padding:0;
+            min-height:100vh;
+        }
+        .header {
+            background:#fff; padding:20px 25px;
+            border-bottom:3px solid #52B788;
+            display:flex; justify-content:space-between;
+            align-items:center;
+        }
+        .header h1 { color:#1B4332; font-size:22px; }
+        .header p { color:#777; font-size:13px; }
+        .main { padding:20px 25px; }
+
+        /* ── Alertas ── */
+        .alerta {
+            padding:12px 18px; border-radius:6px;
+            margin-bottom:15px; font-size:14px;
+        }
+        .alerta.success { background:#D8F3DC; color:#1B4332; }
+        .alerta.error   { background:#FFE0E0; color:#C62828; }
+        .alerta.warning { background:#FFF3CD; color:#856404; }
+
+        /* ── Tarjetas ── */
+        .tarjetas {
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+            gap:15px; margin-bottom:25px;
+        }
+        .tarjeta {
+            padding:20px; border-radius:10px;
+            color:#fff; text-align:center;
+        }
+        .tarjeta .icono { font-size:32px; }
+        .tarjeta .valor { font-size:24px; font-weight:bold; margin:5px 0; }
+        .tarjeta .titulo { font-size:13px; opacity:0.9; }
+        .tarjeta .sub { font-size:11px; opacity:0.7; }
+        .t-verde  { background:#2D6A4F; }
+        .t-azul   { background:#457B9D; }
+        .t-dorado { background:#E76F51; }
+        .t-naranja{ background:#F4845F; }
+
+        /* ── Tabla ── */
+        .tabla-container {
+            background:#fff; border-radius:8px;
+            overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.1);
+        }
+        table {
+            width:100%; border-collapse:collapse; font-size:14px;
+        }
+        th {
+            background:#1B4332; color:#fff;
+            padding:12px 15px; text-align:left;
+        }
+        td { padding:11px 15px; border-bottom:1px solid #f0f0f0; }
+        tr:hover { background:#f9f9f9; }
+        tr:last-child td { border-bottom:none; }
+
+        /* ── Botones ── */
+        .btn {
+            display:inline-block; padding:8px 16px;
+            border-radius:5px; text-decoration:none;
+            font-size:13px; font-weight:bold;
+            cursor:pointer; border:none; transition:0.2s;
+        }
+        .btn:hover { opacity:0.85; }
+        .btn-verde  { background:#2D6A4F; color:#fff; }
+        .btn-azul   { background:#457B9D; color:#fff; }
+        .btn-rojo   { background:#E63946; color:#fff; }
+        .btn-dorado { background:#E76F51; color:#fff; }
+        .btn-gris   { background:#aaa;    color:#fff; }
+        .btn-sm { padding:5px 10px; font-size:12px; }
+
+        /* ── Formulario ── */
+        .form-card {
+            background:#fff; border-radius:8px;
+            padding:25px; max-width:600px;
+            box-shadow:0 1px 4px rgba(0,0,0,.1);
+        }
+        .form-group { margin-bottom:15px; }
+        .form-group label {
+            display:block; font-size:13px;
+            color:#555; margin-bottom:5px; font-weight:600;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width:100%; padding:9px 12px;
+            border:1px solid #ddd; border-radius:5px;
+            font-size:14px; font-family:inherit;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline:none; border-color:#52B788;
+        }
+        .form-row {
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:15px;
+        }
+
+        /* ── Barra de búsqueda ── */
+        .barra-acciones {
+            display:flex; gap:10px; align-items:center;
+            margin-bottom:15px; flex-wrap:wrap;
+        }
+        .barra-acciones input[type=text],
+        .barra-acciones input[type=date] {
+            padding:8px 12px; border:1px solid #ddd;
+            border-radius:5px; font-size:13px;
+        }
+
+        /* ── Badge ── */
+        .badge {
+            display:inline-block; padding:3px 8px;
+            border-radius:12px; font-size:11px;
+            font-weight:bold;
+        }
+        .badge-verde  { background:#D8F3DC; color:#1B4332; }
+        .badge-rojo   { background:#FFE0E0; color:#C62828; }
+        .badge-dorado { background:#FFF3CD; color:#856404; }
+
+        /* ── Carrito de ventas ── */
+        .venta-grid {
+            display:grid; grid-template-columns:1fr 1fr; gap:20px;
+        }
+        .panel {
+            background:#fff; border-radius:8px; padding:20px;
+            box-shadow:0 1px 4px rgba(0,0,0,.1);
+        }
+        .panel h3 {
+            color:#1B4332; margin-bottom:15px;
+            padding-bottom:10px; border-bottom:2px solid #D8F3DC;
+        }
+        .total-venta {
+            font-size:22px; font-weight:bold;
+            color:#1B4332; text-align:right;
+            padding:10px 0;
+        }
+
+        /* ── Responsive ── */
+        @media(max-width:768px){
+            .sidebar { width:100%; height:auto; position:relative; }
+            .contenido { margin-left:0; }
+            .venta-grid { grid-template-columns:1fr; }
+            .form-row { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="logo">
+        <div class="icono">🌿</div>
+        <h2>SUMAK'<br>OCONBAMBA</h2>
+        <p>Control de Ventas</p>
+    </div>
+
+    <a href="/dashboard" {% if request.path=='/dashboard' %}class="activo"{% endif %}>
+        🏠 Inicio
+    </a>
+    <a href="/productos" {% if '/productos' in request.path %}class="activo"{% endif %}>
+        📦 Productos
+    </a>
+    <a href="/ventas" {% if '/ventas' in request.path %}class="activo"{% endif %}>
+        💰 Ventas
+    </a>
+    <a href="/compras" {% if '/compras' in request.path %}class="activo"{% endif %}>
+        🛒 Compras
+    </a>
+    <a href="/clientes" {% if '/clientes' in request.path %}class="activo"{% endif %}>
+        👥 Clientes
+    </a>
+    <a href="/reportes" {% if '/reportes' in request.path %}class="activo"{% endif %}>
+        📊 Reportes
+    </a>
+
+    <div class="user-info">
+        <p>👤 {{ session.usuario_nombre }}<br>
+           {{ session.usuario_rol }}</p>
+        <a href="/logout" class="btn btn-rojo">🚪 Salir</a>
+    </div>
+</div>
+
+<!-- CONTENIDO -->
+<div class="contenido">
+    <div class="header">
+        <div>
+            <h1>{% block titulo %}{% endblock %}</h1>
+            <p>{% block subtitulo %}{% endblock %}</p>
+        </div>
+        <div>
+            <span style="font-size:13px;color:#777">
+                📅 {{ now }}
+            </span>
+        </div>
+    </div>
+
+    <div class="main">
+        {% with msgs = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in msgs %}
+        <div class="alerta {{ cat }}">{{ msg }}</div>
+        {% endfor %}
+        {% endwith %}
+
+        {% block contenido %}{% endblock %}
+    </div>
+</div>
+
+</body>
+</html>
