@@ -1,1 +1,120 @@
+{% extends 'base.html' %}
+{% block titulo %}🏠 Panel de Control{% endblock %}
+{% block subtitulo %}Bienvenido, {{ session.usuario_nombre }}{% endblock %}
 
+{% block contenido %}
+
+<!-- Tarjetas resumen -->
+<div class="tarjetas">
+    <div class="tarjeta t-verde">
+        <div class="icono">💰</div>
+        <div class="valor">S/. {{ "%.2f"|format(total_hoy) }}</div>
+        <div class="titulo">Ventas Hoy</div>
+        <div class="sub">{{ num_ventas_hoy }} transacciones</div>
+    </div>
+    <div class="tarjeta t-azul">
+        <div class="icono">📦</div>
+        <div class="valor">{{ total_productos }}</div>
+        <div class="titulo">Productos</div>
+        <div class="sub">registrados</div>
+    </div>
+    <div class="tarjeta t-dorado">
+        <div class="icono">👥</div>
+        <div class="valor">{{ total_clientes }}</div>
+        <div class="titulo">Clientes</div>
+        <div class="sub">registrados</div>
+    </div>
+    <div class="tarjeta t-naranja">
+        <div class="icono">🛒</div>
+        <div class="valor">S/. {{ "%.2f"|format(total_compras_hoy) }}</div>
+        <div class="titulo">Compras Hoy</div>
+        <div class="sub">en insumos</div>
+    </div>
+</div>
+
+<!-- Alertas stock bajo -->
+{% if alertas %}
+<div class="alerta warning">
+    ⚠️ <strong>Stock bajo en {{ alertas|length }} insumo(s):</strong>
+    {% for a in alertas %}
+        {{ a.nombre }} ({{ a.stock }} {{ a.unidad_medida }}){% if not loop.last %}, {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Gráfica ventas -->
+<div class="tabla-container" style="padding:20px;margin-bottom:20px">
+    <h3 style="color:#1B4332;margin-bottom:15px">
+        📈 Ventas - Últimos 7 días
+    </h3>
+    <canvas id="graficaVentas" height="80"></canvas>
+</div>
+
+<!-- Últimas ventas -->
+<div class="tabla-container">
+    <div style="padding:15px 20px;border-bottom:1px solid #f0f0f0;
+                display:flex;justify-content:space-between;align-items:center">
+        <h3 style="color:#1B4332">🕐 Últimas Ventas</h3>
+        <a href="/ventas/nueva" class="btn btn-verde">🆕 Nueva Venta</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>#Venta</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Cliente</th>
+                <th>Total</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for v in ultimas_ventas %}
+        <tr>
+            <td><strong>#{{ "%04d"|format(v.id) }}</strong></td>
+            <td>{{ v.fecha }}</td>
+            <td>{{ v.hora }}</td>
+            <td>{{ v.cliente_nombre }}</td>
+            <td><strong>S/. {{ "%.2f"|format(v.total) }}</strong></td>
+            <td>
+                <span class="badge badge-verde">✅ Activa</span>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6" style="text-align:center;color:#aaa;padding:30px">
+                No hay ventas registradas aún
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('graficaVentas').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{ fechas | tojson }},
+        datasets: [{
+            label: 'Ventas (S/.)',
+            data: {{ totales | tojson }},
+            backgroundColor: 'rgba(82, 183, 136, 0.7)',
+            borderColor: '#2D6A4F',
+            borderWidth: 1,
+            borderRadius: 5
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true,
+                 ticks: { callback: v => 'S/. ' + v } }
+        }
+    }
+});
+</script>
+{% endblock %}
